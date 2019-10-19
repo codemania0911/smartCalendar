@@ -1,0 +1,75 @@
+<!-- Top navigation -->
+<nav class="navbar navbar-dark navbar-expand fixed-top bg-dark shadow p0 m0">
+    <a class="navbar-brand" routerLink="/dashboard">
+      <img class="brand-logo logo" src="assets/logo.png" alt="SmartCalendar logo">
+      <span class="dasboard-text dasboard-text-active">Dashboard</span>
+    </a>
+  <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/time-table">Time Table</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/manage">Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/report">Report</a>
+      </li>
+    </ul>
+    <span class="nav-item my-2 my-lg-0"> 
+      <a class="nav-link" routerLink="/profile">
+        <button type="button" class="btn btn-circle btn-sm text-center"><i class="fas fa-user user-icon"></i></button>
+     </a>
+    </span>
+</nav>
+
+
+<!-- Sidebar navigation -->
+<div class="container-fluid">
+<div class="row">
+
+<nav class="col-md-2 d-md-block bg-light sidebar">
+  <div class="sidebar-sticky">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link active">
+          <i class="fas fa-user"></i>User Profile
+        </a>
+      </li>
+      <!-- Calling SignOut() Api from AuthService -->
+      <li class="nav-item">
+        <a class="nav-link" (click)="authService.SignOut()">
+          <i class="fas fa-sign-out-alt"></i>Log out
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main content -->
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+  <div class="inner-adjust">
+
+    <div class="pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">User Profile</h1>
+    </div>
+    <!-- Show user data when logged in -->
+    <div class="row" *ngIf="authService.userData as user">
+      <div class="col-md-12">
+        <div class="media">
+          <img class="align-self-start mr-5 img-thumbnail rounded-circle" src="{{(user.photoURL) ? user.photoURL : '/assets/dummy-user.png'}}"
+            alt="{{user.displayName}}">
+          <div class="media-body">
+            <h1>Hello: <strong>{{(user.displayName) ? user.displayName : 'User'}}</strong></h1>
+            <p>User ID: <strong>{{user.uid}}</strong></p>
+            <p>Email: <strong>{{user.email}}</strong></p>
+            <p>Email Verified: <strong>{{user.emailVerified}}</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</div>
+</div>

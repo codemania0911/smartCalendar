@@ -1,0 +1,831 @@
+<div class="container">
+  <!-- Filter Group -->
+  <label for="repeatSelect">Group By: </label>
+  <select  ng-init="showByOption = availableOptions[0]"  ng-options="option for option in availableOptions" name="repeatSelect" id="repeatSelect" ng-model="showByOption">
+  </select>
+  
+  
+<div>
+    <div class="row" ng-show="selectedType==='TravelItinerary'">
+
+        <div class="botton-group-add-back"> 
+            <h3> Travel Itinerary</h3>
+            <div class="text-center">
+                <div class="btn-group">
+                  <label class="btn btn-primary" ng-model="filterDateMode" uib-btn-radio="'upcoming'" ng-click="setDateFilter(filterDateMode)">Up Next</label>
+                  <label class="btn btn-primary" ng-model="filterDateMode" uib-btn-radio="'past'" ng-click="setDateFilter(filterDateMode)">Past</label>
+                </div> 
+            </div>
+        </div>
+    
+          
+    
+          
+          <div class="text-left" ng-if="showByOption==='None'">
+            <div ng-repeat="(key,trip) in travelItinerary | filter: dateFilter track by $index" >
+              <div class="row">
+                <div class="botton-group-add-back">
+                  <button class="accordion-top text-center">{{trip.startsAt | date}} - {{trip.endsAt | date}}</button>
+                  <button class="btn-edit" ng-click="openAddOrEditModal(trip,'/editTravelItineraryForm.html','Edit Travel Itinerary')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                  <button class="btn-remove" ng-click="openAddOrEditModal(trip,'deleteTravelItinerary','this travel itinerary')"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                </div>
+              </div>
+              <div class="row">
+                <button ng-click="showMoreTrips(trip)" class="accordion-bottom text-center">
+                  ...
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="showByOption==='Staff'">
+                  <div class="text-left" ng-repeat="(key,user) in users track by $index">
+                        <h4><strong>{{user.fullName}}</strong></h4>
+                        <div class="horizontal-slide">
+                          <div ng-repeat="(key,trip) in travelItinerary | filter: dateFilter track by $index" class="item">
+                            <div class="botton-group-add-back" ng-if="checkIfInEmail(trip, user.email)">
+                              <button class="accordion" ng-click="showMoreTrips(trip)">{{trip.startsAt | date}} - {{trip.endsAt | date}} <span class="text-right">...</span></button>
+                              <button class="btn-edit" ng-click="openAddOrEditModal(trip,'/editTravelItineraryForm.html','Edit Travel Itinerary')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                              <button class="btn-remove" ng-click="openAddOrEditModal(trip,'deleteTravelItinerary','this travel itinerary')"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                            </div>
+                              
+                          </div>
+                       </div>
+                       <hr>
+                  </div>
+            </div>
+
+            <div ng-if="showByOption==='Month'">
+                  <div class="text-left" ng-repeat="(key,month) in listOfMonths track by $index">
+                        <h4><strong>{{month}}</strong></h4>
+                        <div class="horizontal-slide">
+                          <div ng-repeat="(key,trip) in travelItinerary | filter: dateFilter track by $index" class="item">
+                              <div class="botton-group-add-back" ng-if="checkIfInMonth(month, trip.startsAt)">
+                                  <button class="accordion" ng-click="showMoreTrips(trip)">{{trip.startsAt | date}} - {{trip.endsAt | date}} ...</button>
+                                  <button class="btn-edit" ng-click="openAddOrEditModal(trip,'/editTravelItineraryForm.html','Edit Travel Itinerary')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                                  <button class="btn-remove" ng-click="openAddOrEditModal(trip,'deleteTravelItinerary','this travel itinerary')"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                                </div>
+                          </div>
+                       </div>
+                       <hr>
+                  </div>
+            </div>
+    
+          
+          <div class="text-right" style="margin-top:5px;">
+            <button class="btn btn-primary btn-circle" ng-click="openAddOrEditModal(travelItinerary,'/addTravelItineraryForm.html','Add Travel Itinerary')"><i  class="glyphicon glyphicon-plus"></i></button>
+          </div>
+      </div>
+    </div>
+    
+      <div class="row" ng-show="selectedType==='Trips'">
+        <div class="botton-group-add-back">
+          <h3> Trips From {{selectTravelItinerary.startsAt|date}} To {{selectTravelItinerary.endsAt |date}}</h3> 
+          <!-- <div class="text-center">
+              <div class="btn-group">
+                <label class="btn btn-primary" ng-model="filterDateMode" uib-btn-radio="'upcoming'" ng-click="cellIsOpen = false">Current</label>
+                <label class="btn btn-primary" ng-model="filterDateMode" uib-btn-radio="'past'" ng-click="cellIsOpen = false">Past</label>
+              </div>
+            </div> -->
+        </div>
+
+      <div  class="text-left" ng-if="showByOption==='Month'">
+          <div class="text-left" ng-repeat="(key,month) in listOfMonths track by $index">
+                <h4><strong>{{month}}</strong></h4>
+                <div class="horizontal-slide ">
+                    <div ng-repeat="(key,trip) in selectedTrips track by $index " class="item">
+                        <div class="botton-group-add-back" ng-if="checkIfInMonth(month, trip.startsAt)">
+                            <button class="accordion" ng-click="collapseOpen(trip)">{{trip.location}} <span class="text-right">...</span></button>
+                            <button class="btn-edit" ng-click="openAddOrEditModal(trip,'/editTripForm.html','Edit Trip')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                            <button class="btn-remove" ng-click="openAddOrEditModal(trip,'deleteTrip','trip '+trip.title)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                          </div>  
+                      <div class="panel" style="display: block" ng-show="trip.expand && checkIfInMonth(month, trip.startsAt)" id="{{'collapse' +trip.Id}}">
+                          <div class="text-center">
+                            <!-- Button code -->
+                            <!--<div title="Add to Calendar" class="addeventatc">
+                                Add to Calendar
+                                <span class="start">{{trip.startsAt | date:"MM/dd/yyyy h:mma"}}</span>
+                                <span class="end">{{trip.endsAt | date:"MM/dd/yyyy h:mma"}}</span>
+                                <span class="timezone">Australia/Currie</span>
+                                <span class="title">Trip to {{trip.location}}</span>
+                                <span class="attendees" v-if="trip.users"><span ng-repeat="user in trip.users track by $index">{{user.email}},</span></span>
+                                <span class="description">{{trip.description ? trip.description : ''}}</span>
+                                <span class="location">{{trip.location}}</span>
+                            </div>-->
+                            <!-- Button code -->
+                            <div title="Add to Calendar" class="addeventatc">
+                                Add to Calendar
+                                <span class="start">{{trip.startsAt | date}}</span>
+                                <span class="end">{{trip.endsAt | date}}</span>
+                                <span class="timezone">Australia/Currie</span>
+                                <span class="title">Trip to {{trip.location}}</span>
+                                <span class="attendees" v-if="trip.users"><span ng-repeat="user in trip.users track by $index">{{user.email}},</span></span>
+                                <span class="description">{{trip.description ? trip.description : ''}}</span>
+                                <span class="location">{{trip.location}}</span>
+                            </div>
+                          </div>  
+                        <table class="table ">
+                            <tr>
+                                <td>
+                                  <p> <i class="glyphicon glyphicon-save"></i> <strong>Location:</strong> <a ng-click="openMap(trip.location)">{{trip.location}} </a><span ng-if="trip.location ==='N/A'">{{trip.location}} </span></p>
+                                </td>
+                              </tr>
+                                <tr>
+                                  <td >
+                                    <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Start:</strong> {{trip.startsAt |date}} </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td >
+                                    <p> <i class="glyphicon glyphicon-calendar"></i> <strong>End:</strong> {{trip.endsAt | date}} </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                      <p> <i class="glyphicon glyphicon-user"></i> <strong>Attendees:</strong>{{trip.users.length}}</p>
+                                    </td>
+                                  </tr>
+                              </table>
+                              <button ng-click="showMore(trip)" class="accordion-bottom text-center">
+                                  <strong>Show Events</strong>
+                                </button>  
+                      </div>
+                    </div>
+                  </div>
+               <hr>
+            </div>
+    </div>
+          
+        <div  class="text-left" ng-if="showByOption==='Staff'">
+              <div class="text-left" ng-repeat="(key,user) in users track by $index">
+                    <h4><strong>{{user.fullName}}</strong></h4>
+                    <div class="horizontal-slide ">
+                        <div ng-repeat="(key,trip) in selectedTrips track by $index " class="item">
+                            <div class="botton-group-add-back" ng-if="checkIfInEmailForTrip(trip, user.email)">
+                                <button class="accordion" ng-click="collapseOpen(trip)">{{trip.location}} <span class="text-right">...</span></button>
+                                <button class="btn-edit" ng-click="openAddOrEditModal(trip,'/editTripForm.html','Edit Trip')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                                <button class="btn-remove" ng-click="openAddOrEditModal(trip,'deleteTrip','trip '+trip.title)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                              </div>
+                          <div class="panel" style="display: block" ng-show="trip.expand && checkIfInEmailForTrip(trip, user.email)" id="{{'collapse' +trip.Id}}">
+                              <div class="text-center"><!-- Button code -->
+                                <div title="Add to Calendar" class="addeventatc">
+                                    Add to Calendar
+                                    <span class="start">{{trip.startsAt | date}}</span>
+                                    <span class="end">{{trip.endsAt | date}}</span>
+                                    <span class="timezone">Australia/Currie</span>
+                                    <span class="title">Trip to {{trip.location}}</span>
+                                    <span class="attendees" v-if="trip.users"><span ng-repeat="user in trip.users track by $index">{{user.email}},</span></span>
+                                    <span class="description">{{trip.description ? trip.description : ''}}</span>
+                                    <span class="location">{{trip.location}}</span>
+                                </div></div>  
+                                  
+                                <table class="table ">
+                                    <tr>
+                                        <td>
+                                          <p> <i class="glyphicon glyphicon-save"></i> <strong>Location:</strong> <a ng-click="openMap(trip.location)">{{trip.location}} </a><span ng-if="trip.location ==='N/A'">{{trip.location}} </span></p>
+                                        </td>
+                                      </tr>
+                                        <tr>
+                                          <td >
+                                            <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Start:</strong> {{trip.startsAt |date}} </p>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td >
+                                            <p> <i class="glyphicon glyphicon-calendar"></i> <strong>End:</strong> {{trip.endsAt | date}} </p>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                              <p> <i class="glyphicon glyphicon-user"></i> <strong>Attendees:</strong>{{trip.users.length}}</p>
+                                            </td>
+                                          </tr>
+                                      </table>
+
+                                      <button ng-click="showMore(trip)" class="accordion-bottom text-center">
+                                          <strong>Show Events</strong>
+                                        </button> 
+                          </div>
+                        </div>
+                      </div>
+                   <hr>
+                </div>
+        </div>
+
+        <div class="text-left" ng-if="showByOption==='None'">
+                <div ng-repeat="(key,trip) in selectedTrips track by $index" style="margin-left:50px;margin-right:50px;">
+                  <div class="row">
+                      <div class="botton-group-add-back">
+                        <div class="accordion-top text-center" ng-click="collapseOpen(trip)"><strong>{{trip.location}}</strong></div>
+                        <button class="btn-edit" ng-click="openAddOrEditModal(trip,'/editTripForm.html','Edit Trip')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                        <button class="btn-remove" ng-click="openAddOrEditModal(trip,'deleteTrip','trip '+trip.title)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="accordion-body text-center">
+                      {{trip.startsAt |date}} - {{trip.endsAt |date}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <button ng-click="collapseOpen(trip)" class="accordion-bottom text-center">
+                      ...
+                    </button>
+                  </div>
+                    
+                  
+                  <div class="panel" style="display: block" ng-show="trip.expand" id="{{'collapse' +trip.Id}}">
+                      <div class="text-center"><!-- Button code -->
+                        <div title="Add to Calendar" class="addeventatc">
+                            Add to Calendar
+                            <span class="start">{{trip.startsAt | date}}</span>
+                            <span class="end">{{trip.endsAt | date}}</span>
+                            <span class="timezone">Australia/Currie</span>
+                            <span class="title">Trip to {{trip.location}}</span>
+                            <span class="attendees" v-if="trip.users"><span ng-repeat="user in trip.users track by $index">{{user.email}},</span></span>
+                            <span class="description">{{trip.description ? trip.description : ''}}</span>
+                            <span class="location">{{trip.location}}</span>
+                        </div>
+                      </div>  
+                        <table class="table">
+                            <tr>
+                                <td>
+                                  <p> <i class="glyphicon glyphicon-save"></i> <strong>Location:</strong> <a ng-click="openMap(trip.location)">{{trip.location}} </a><span ng-if="trip.location ==='N/A'">{{trip.location}} </span></p>
+                                </td>
+                              </tr>
+                                <tr>
+                                  <td >
+                                    <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Start:</strong> {{trip.startsAt |date}} </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td >
+                                    <p> <i class="glyphicon glyphicon-calendar"></i> <strong>End:</strong> {{trip.endsAt | date}} </p>
+                                  </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                      <p> <i class="glyphicon glyphicon-user"></i> <strong>Attendees:</strong>{{trip.users.length}} attendees</p>
+                                    </td>
+                                  </tr>
+                              </table>
+                              <button ng-click="showMore(trip)" class="accordion-bottom text-center">
+                                  <strong>Show Events</strong>
+                                </button> 
+                  </div>
+                </div>
+        </div>
+            
+    
+            <div class="botton-group-add-back">
+                <button class="btn btn-primary back-button" ng-click="selectedType='TravelItinerary'"><i class="glyphicon glyphicon-backward"></i></button>
+                <button class="btn btn-primary btn-circle" ng-click="openAddOrEditModal(trip,'/addTripForm.html','Add Trip')"><i class="glyphicon glyphicon-plus text-center"></i></button>
+              </div>
+      </div>
+    
+      <div clas="row" ng-show="selectedType==='Events'">
+        <div class="col col-sm-12">  
+            <h3> Events In {{selectedTrip.location}} Trip</h3>
+            <button class="accordion-db text-center" ng-if="selectedEvents.length==0" style="margin-bottom: 10px">No Events</button>
+
+            <div ng-repeat="(key,event) in selectedEvents track by $index" style="padding-bottom:10px">
+                <div class="row">
+                  <div class="col col-sm-6">
+                      <div class="botton-group-add-back">
+                          <button class="accordion-db" ng-click="collapseOpen(event)">{{event.title}} <span class="text-left"></span></button>
+                          <button class="btn-edit" ng-click="openAddOrEditModal(event,'/editEventForm.html','Edit Event')"><i class="glyphicon glyphicon-pencil text-center"></i></button>
+                          <button class="btn-remove" ng-click="openAddOrEditModal(event,'deleteEvent', event.title)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                        </div>
+                        <div class="panel" style="display: block" ng-show="event.expand" id="{{'collapse' +event.Id}}">
+                            <div ng-show="event.type ==='Activities'" class="text-center"><!-- Button code -->
+                              <div title="Add to Calendar" class="addeventatc">
+                                  Add to Calendar
+                                  <span class="start">{{event.startsAt | date}}</span>
+                                  <span class="end">{{event.endsAt | date}}</span>
+                                  <span class="timezone">Australia/Currie</span>
+                                  <span class="title">{{event.title}}</span>
+                                  <span class="attendees" v-if="trip.users"><span ng-repeat="user in trip.users track by $index">{{user.email}},</span></span>
+                                  <span class="description">{{event.description ? trip.description : ''}}</span>
+                                  <span class="location">{{event.location}}</span>
+                              </div></div> 
+                            <table class="table ">
+                                <tr ng-show="event.type">
+                                    <td>
+                                      <p> <i class="glyphicon glyphicon-usd"></i> <strong>Title:</strong> {{event.title}} </p>
+                                    </td>
+                                  </tr>
+                                  <tr ng-show="event.location">
+                                      <td >
+                                        <p> <i class="glyphicon glyphicon-save"></i> <strong>Location:</strong> <a ng-if="event.location !=='N/A'" ng-click="openMap(event.location)">{{event.location}} </a><span ng-if="event.location ==='N/A'">{{event.location}} </span></p>
+                                      </td>
+                                    </tr>
+                                  <tr ng-show="event.startsAt">
+                                    <td >
+                                      <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Start:</strong ng-if="event.startsAt"> {{event.startsAt |date}} </p>
+                                    </td>
+                                  </tr>
+                                  <tr ng-show="event.endsAt">
+                                    <td >
+                                      <p> <i class="glyphicon glyphicon-calendar"></i> <strong>End:</strong ng-if="event.endsAt"> {{event.endsAt | date}} </p>
+                                    </td>
+                                  </tr>
+                                  <tr ng-show="event.airline">
+                                      <td >
+                                        <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Airline:</strong ng-if="event.airline"> {{event.airline }} </p>
+                                      </td>
+                                    </tr>
+                                      <tr ng-show="event.flightDetail">
+                                          <td >
+                                            <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Flight Detail:</strong ng-if="event.flightDetail"> {{event.flightDetail}} </p>
+                                          </td>
+                                        </tr>
+                                        <tr ng-show="event.flightDetail">
+                                            <td >
+                                              <p> <i class="glyphicon glyphicon-calendar"></i> <strong>Hotel:</strong ng-if="event.hotel"> {{event.hotel}} </p>
+                                            </td>
+                                          </tr>
+                                          </table>
+                        </div>
+                  </div>
+                  
+                  <div class="col col-sm-6">
+                      <div class="botton-group-add-back" ng-if="event.users==='N/A' || event.users.length===0">
+                          <button class="accordion-db">No Staff</button>
+                          <button class="btn-edit" ng-click="openAddOrEditModal(event,'/editEventForm.html','Edit Event')"><i class="glyphicon glyphicon-plus text-center"></i></button>
+                      </div>
+                      <div class="horizontal-slide" style="margin-top:0;" ng-if="event.users!=='N/A' || event.users.length===0">
+                          <div ng-repeat="(key,user) in event.users track by $index" class="item">
+                              <div class="botton-group-add-back">
+                                <button class="accordion-db" ng-click="collapseOpen(user)">{{user.fullName}}</button>
+                              </div>
+                              <div class="panel" style="display: block" ng-show="user.expand" id="{{'collapse' +user.Id}}"> 
+                                  <table class="table ">
+                                    <tr>
+                                        <td>
+                                          <p> <i class="glyphicon glyphicon-envelope"></i> <strong>Email:</strong> {{user.email}} </p>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                            <p> <i class="glyphicon glyphicon-envelope"></i> <strong>Phone:</strong> {{user.phone}} </p>
+                                          </td>
+                                        </tr>
+                                    </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  
+                </div>
+            </div>
+
+
+            <div class="botton-group-add-back">
+                <button class="btn btn-primary back-button" ng-click="backToTrips()"><i class="glyphicon glyphicon-backward"></i></button>
+                <div class="text-right"><button class="btn btn-primary" ng-click="openAddOrEditModal(selectedEvents,'/addEventForm.html','Add Event')">Add Event</button></div>
+            </div> 
+        </div>
+
+            
+      </div>
+
+          <!-- mapModal-->
+        <div id="mapModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="true">
+            <div class="modal-dialog">
+      
+              <!-- Modal content-->
+              <div class="modal-content modal-content-general">
+                <div class="modal-header">
+                    <h4 id="event-editor">
+                        Map
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="clearfix"></div>
+                      </h4>
+                  
+                </div>
+                <div class="modal-body">
+                  <div style="margin:auto;">
+                      <div id="map" ng-class="Style"></div>
+
+                  </div>
+
+                  
+                  
+    
+                </div>
+              </div>
+      
+            </div>
+          </div>
+
+          <!-- Add or Edit Modal-->
+          <div id="addOrEditModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="true">
+              <div class="modal-dialog">
+        
+                <!-- Modal content-->
+                <div class="modal-content modal-content-general">
+                  <div class="modal-header">
+                      <h4 id="event-editor">
+                          {{modalTitle}}
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <div class="clearfix"></div>
+                        </h4>
+                    
+                  </div>
+                  <div class="modal-body">
+                      <div ng-include="modalContent"></div>
+                  </div>
+                </div>
+        
+              </div>
+            </div>
+
+            <!-- Delete Modal-->
+          <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="true">
+              <div class="modal-dialog">
+        
+                <!-- Modal content-->
+                <div class="modal-content modal-content-general">
+                  <div class="modal-header">
+                      <h4 id="event-editor">
+                         Are you sure?
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <div class="clearfix"></div>
+                        </h4>
+                    
+                  </div>
+                  <div class="modal-body">
+                      <div ng-include="modalContent"></div>
+                      <p>Do you really want to delete {{modalTitle}}? This process cannot be undone.</p>
+                  </div>
+
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-danger" ng-click="deleteItem()" class="close" data-dismiss="modal">Delete</button>
+                    </div>
+                </div>
+        
+              </div>
+            </div>
+
+
+  
+
+</div>
+
+<!-- Add Item -->
+<script type="text/ng-template" id="/addTravelItineraryForm.html">
+  <form class="form-signin" name="newTravelItineraryForm" id="newTravelItineraryForm">
+  
+        <div class="form-label-group" ng-class="{'has-error': newTravelItineraryForm.startsAt.$invalid && newTravelItineraryForm.budget.$touched}">
+            <input type="date" name="startsAt" ng-model="newTrip.startsAt" id="inputStartsAt1" class="form-control" placeholder="Start At" required>
+            <label for="inputStartsAt1">Start At</label>
+            <small class="help-block" ng-show="newTravelItineraryForm.startsAt.$invalid && newTravelItineraryForm.startsAt.$touched">Please enter a valid Date Time</small>
+          </div>
+  
+          <div class="form-label-group" ng-class="{'has-error': newTravelItineraryForm.endsAt.$invalid && newTravelItineraryForm.budget.$touched}">
+              <input type="date" name="endsAt" ng-model="newTrip.endsAt" id="inputEndsAt1" class="form-control" placeholder="Start At" required>
+              <label for="inputEndsAt1">End At</label>
+              <small class="help-block" ng-show="newTravelItineraryForm.endsAt.$invalid && newTravelItineraryForm.endsAt.$touched">Please enter a valid Date Time</small>
+            </div>
+
+
+
+      <div class="text-center">
+          <button class="btn btn-success pull-center text-uppercase" ng-click="addTravelItinerary(newTrip)" data-dismiss="modal" ng-disabled="newTravelItineraryForm.$invalid">Add Itinerary</button>
+      </div>
+    </form>
+  
+      
+
+      
+
+</script>
+
+
+
+<script type="text/ng-template" id="/addTripForm.html">
+  <form class="form-signin" name="newTripForm" id="newTripForm">
+        <div class="form-label-group" ng-class="{'has-error': newTripForm.location.$invalid && newTripForm.location.$touched}">
+            <input type="text" name="location" placeholder="Enter your address" id="inputLocation1" ng-places-autocomplete ng-model="newTrip.location" class="form-control" options="optionsCountry" details="vm.details" initial-address="vm.initialAddress" required/>
+            <label for="inputLocation1">Location</label>
+            <small class="help-block" ng-show="newTripForm.location.$invalid && newTripForm.location.$touched">Please enter a Location</small>
+  
+          </div>
+  
+        
+        <div class="form-label-group" ng-class="{'has-error': newTripForm.user.$invalid && newTripForm.user.$touched && !isSelectedValid}">
+            <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+            <div ng-repeat="user in selectedUserList track by $index" style="padding-left:10px;padding-right:10px;">
+                <div class="botton-group-add-back">
+                  <button class="accordion-user">{{user.fullName}}</button>
+                  <button class="btn-remove" ng-click="removeUserFromSelectList(user)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                </div>
+              </div>
+
+          <div class="botton-group-add-back">
+              
+              <select ng-model="selectedUser" id="UserInput" class="form-control" ng-options="x.fullName for x in users">
+              </select>
+              <button type="button" class="btn btn-primary" ng-click="selectedList(selectedUser)"> + </button>
+          </div>
+
+          
+          <small class="help-block" ng-show="!isSelectedValid">User Existed or Invalid</small>
+        </div>
+  
+        <div class="form-label-group" ng-class="{'has-error': newTripForm.startsAt.$invalid && newTripForm.budget.$touched}">
+            <input type="datetime-local" format-value="yyyy-MM-ddTHH:mm" name="startsAt" ng-model="newTrip.startsAt" id="inputStartsAt1" ng-init="newTrip.startsAt=selectTravelItinerary.startsAt" class="form-control" placeholder="Start At" required>
+            <label for="inputStartsAt1">Start At</label>
+            <small class="help-block" ng-show="newTripForm.startsAt.$invalid && newTripForm.startsAt.$touched">Please enter a valid Date</small>
+          </div>
+  
+          <div class="form-label-group" ng-class="{'has-error': newTripForm.endsAt.$invalid && newTripForm.budget.$touched}">
+              <input type="datetime-local" format-value="yyyy-MM-ddTHH:mm" name="endsAt" ng-model="newTrip.endsAt" id="inputEndsAt1" ng-init="newTrip.endsAt=selectTravelItinerary.endsAt" class="form-control" placeholder="End At" required>
+              <label for="inputEndsAt1">End At</label>
+              <small class="help-block" ng-show="newTripForm.endsAt.$invalid && newTripForm.endsAt.$touched">Please enter a valid Date</small>
+            </div>
+
+
+
+      <div class="text-center">
+          <button class="btn btn-success pull-center text-uppercase" ng-click="addTrip(newTrip)" data-dismiss="modal" ng-disabled="newTripForm.$invalid">Add Trip</button>
+      </div>
+    </form>
+  
+      
+
+      
+
+</script>
+
+
+<script type="text/ng-template" id ="/addEventForm.html">
+  <form class="form-signin" name="newEventForm" id="newEventForm">
+    
+      <div class="form-label-group" ng-class="{'has-error': newEventForm.title.$invalid && newEventForm.title.$touched}">
+          <input type="text" name="title" ng-model="newEvent.title" id="inputTitle1" class="form-control" placeholder="Title" required>
+          <label for="inputTitle1">Title</label>
+          <small class="help-block" ng-show="newEventForm.title.$invalid && newEventForm.title.$touched">Please enter a Trip Title</small>
+        </div>
+  
+        <div class="form-label-group" ng-class="{'has-error': newEventForm.location.$invalid && newEventForm.location.$touched}">
+            <input type="text" name="location" placeholder="Enter your address" id="inputLocation1" required ng-places-autocomplete ng-model="newEvent.location" class="form-control" options="vm.options" details="vm.details" initial-address="vm.initialAddress" required/>
+            <label for="inputLocation1">Location</label>
+            <small class="help-block" ng-show="newEventForm.location.$invalid && newEventForm.location.$touched">Please enter a Location</small>
+  
+          </div>
+
+          <div class="form-label-group" ng-class="{'has-error': newEventForm.airline.$invalid && newEventForm.airline.$touched}">
+              <input type="text" name="airline" ng-model="newEvent.airline" id="airline" class="form-control" placeholder="Flight Number">
+              <label for="airline">Airline</label>
+            </div>
+  
+        <div class="form-label-group">
+            <input type="text" name="description" ng-model="newEvent.flightDetail" id="inputDescription1" class="form-control" placeholder="Flight Detail">
+            <label for="inputDescription1">Flight Detail</label>
+          </div>
+
+          
+          <div class="form-label-group" ng-class="{'has-error': newEventForm.hotel.$invalid && newEventForm.hotel.$touched}">
+              <input type="text" name="hotel" placeholder="Enter your hotel address" id="inputHotel" ng-places-autocomplete ng-model="newEvent.hotel" class="form-control" options="vm.options" details="vm.details" initial-address="vm.initialAddress"/>
+              <label for="inputHotel">Hotel</label>
+              <small class="help-block" ng-show="newEventForm.hotel.$invalid && newEventForm.hotel.$touched && !newEventForm.hotel.valid">Please enter a Location for Hotel</small>
+    
+            </div>
+
+        
+        <div class="form-label-group" ng-class="{'has-error': newEventForm.user.$invalid && newEventForm.user.$touched && !isSelectedValid}">
+
+          <div class="botton-group-add-back">
+              <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+              <select ng-model="selectedUser" class="form-control" ng-options="x.fullName for x in users">
+              </select>
+              <button class="btn btn-primary btn-circle" ng-click="selectedList(selectedUser)"><i  class="glyphicon glyphicon-plus"></i></button>
+          </div>
+
+        <div class="form-label-group" ng-class="{'has-error': newTripForm.user.$invalid && newTripForm.user.$touched && !isSelectedValid}">
+            <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+            <div ng-repeat="user in selectedUserList track by $index" style="padding-left:10px;padding-right:10px;">
+                <div class="botton-group-add-back">
+                  <button class="accordion-user">{{user.fullName}}</button>
+                  <button class="btn-remove" ng-click="removeUserFromSelectList(user)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                </div>
+              </div>
+
+          <div class="botton-group-add-back">
+              
+              <select ng-model="selectedUser" id="UserInput" class="form-control" ng-options="x.fullName for x in users">
+              </select>
+              <button type="button" class="btn btn-primary" ng-click="selectedList(selectedUser)"> + </button>
+          </div>
+
+          
+          <small class="help-block" ng-show="!isSelectedValid">User Existed or Invalid</small>
+        </div>
+
+
+
+  
+        <div class="form-label-group" ng-class="{'has-error': newEventForm.startsAt.$invalid && newEventForm.budget.$touched}">
+            <input type="datetime-local" format-value="yyyy-MM-ddTHH:mm" name="startsAt" ng-init="newEvent.startsAt=selectedTrip.startsAt" ng-model="newEvent.startsAt" id="inputStartsAt1" class="form-control" placeholder="Start At" required>
+            <label for="inputStartsAt1">Start At</label>
+            <small class="help-block" ng-show="newEventForm.startsAt.$invalid && newEventForm.startsAt.$touched">Please enter a valid Date</small>
+          </div>
+  
+          <div class="form-label-group" ng-class="{'has-error': newEventForm.endsAt.$invalid && newEventForm.budget.$touched}">
+            <input type="datetime-local" format-value="yyyy-MM-ddTHH:mm" name="endsAt" ng-init="newEvent.endsAt=selectedTrip.endsAt" ng-model="newEvent.endsAt" id="inputEndsAt1" class="form-control" placeholder="End At" required>
+            <label for="inputEndsAt1">End At</label>
+            <small class="help-block" ng-show="newEventForm.endsAt.$invalid && newEventForm.endsAt.$touched">Please enter a valid Date</small>
+          </div>
+
+
+
+
+    <div class="text-center">
+        <button type ="button" class="btn btn-success pull-center text-uppercase" ng-click="addEvent(newEvent)" data-dismiss="modal" ng-disabled="newEventForm.$invalid">Add Event</button>
+    </div>
+  </form>
+</script>
+
+<!-- Edit Item -->
+
+<script type="text/ng-template" id="/editTravelItineraryForm.html">
+  <form class="form-signin" name="editTravelItineraryForm" id="editTravelItineraryForm">
+  
+        <div class="form-label-group" ng-class="{'has-error': editravelItineraryForm.startsAt.$invalid && editTravelItineraryForm.budget.$touched}">
+          <input type="date" name="startsAt" ng-model="editedTravelItinerary.startsAt" id="inputStartsAt1" class="form-control" placeholder="Start At" required>
+          <label for="inputStartsAt1">Start At</label>
+          <small class="help-block" ng-show="editTravelItineraryForm.startsAt.$invalid && editTravelItineraryForm.startsAt.$touched">Please enter a valid Date Time</small>
+        </div>
+  
+        <div class="form-label-group" ng-class="{'has-error': editTravelItineraryForm.endsAt.$invalid && editTravelItineraryForm.budget.$touched}">
+          <input type="date" name="endsAt" ng-model="editedTravelItinerary.endsAt" id="inputEndsAt1" class="form-control" placeholder="Start At" required>
+          <label for="inputEndsAt1">End At</label>
+          <small class="help-block" ng-show="editTravelItineraryForm.endsAt.$invalid && editTravelItineraryForm.endsAt.$touched">Please enter a valid Date Time</small>
+        </div>
+
+      <div class="text-center">
+          <button class="btn btn-success pull-center text-uppercase" ng-click="editTravelItinerary(editedTravelItinerary)" data-dismiss="modal" ng-disabled="editTravelItineraryForm.$invalid">Save</button>
+      </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="/editTripForm.html">
+  <form class="form-signin" name="editTripForm" id="editTripForm">
+  
+        <div class="form-label-group" ng-class="{'has-error': editTripForm.location.$invalid && editTripForm.location.$touched}">
+            <input type="text" name="location" placeholder="Enter your address" id="inputLocation1" required ng-places-autocomplete ng-model="editedTrip.location" class="form-control" options="optionsCountry" details="vm.details" initial-address="vm.initialAddress" required/>
+            <label for="inputLocation1">Location</label>
+            <small class="help-block" ng-show="editTripForm.location.$invalid && editTripForm.location.$touched">Please enter a Location</small>
+  
+          </div>
+
+  
+
+          <div class="form-label-group" ng-class="{'has-error': newTripForm.user.$invalid && newTripForm.user.$touched && !isSelectedValid}">
+              <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+              <div ng-repeat="user in selectedUserList track by $index" style="padding-left:10px;padding-right:10px;">
+                  <div class="botton-group-add-back">
+                    <button class="accordion-user">{{user.fullName}}</button>
+                    <button class="btn-remove" ng-click="removeUserFromSelectList(user)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                  </div>
+                </div>
+  
+            <div class="botton-group-add-back">
+                
+                <select ng-model="selectedUser" id="UserInput" class="form-control" ng-options="x.fullName for x in users">
+                </select>
+                <button type="button" class="btn btn-primary" ng-click="selectedList(selectedUser)"> + </button>
+            </div>
+  
+            
+            <small class="help-block" ng-show="!isSelectedValid">User Existed or Invalid</small>
+          </div>
+
+        
+        <!-- <div class="form-label-group" ng-class="{'has-error': editTripForm.user.$invalid && editTripForm.user.$touched && !isSelectedValid}">
+
+          <div class="botton-group-add-back">
+              <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+              <select ng-model="selectedUser" class="form-control" ng-options="x.fullName for x in users">
+              </select>
+              <button class="btn btn-primary btn-circle" ng-click="selectedList(selectedUser)"><i  class="glyphicon glyphicon-plus"></i></button>
+          </div>
+
+          <div ng-repeat="user in selectedUserList track by $index" class="item">
+            <div class="botton-group-add-back">
+              <button class="accordion-db">{{user.fullName}}</button>
+              <button class="btn-remove" ng-click="removeUserFromSelectList()" style="padding:0!important"><i class="glyphicon glyphicon-remove text-center"></i></button>
+            </div>
+          </div>
+          <small class="help-block" ng-show="!isSelectedValid">User Existed or Invalid</small>
+        </div> -->
+  
+        <div class="form-label-group" ng-class="{'has-error': editTripForm.startsAt.$invalid && editTripForm.budget.$touched}">
+            <input type="date" name="startsAt" ng-model="editedTrip.startsAt" id="inputStartsAt1" class="form-control" placeholder="Start At" required>
+            <label for="inputStartsAt1">Start At</label>
+            <small class="help-block" ng-show="editTripForm.startsAt.$invalid && editTripForm.startsAt.$touched">Please enter a valid Date</small>
+          </div>
+  
+          <div class="form-label-group" ng-class="{'has-error': editTripForm.endsAt.$invalid && editTripForm.budget.$touched}">
+              <input type="date" name="endsAt" ng-model="editedTrip.endsAt" id="inputEndsAt1" class="form-control" placeholder="End At" required>
+              <label for="inputEndsAt1">End At</label>
+              <small class="help-block" ng-show="editTripForm.endsAt.$invalid && editTripForm.endsAt.$touched">Please enter a valid Date</small>
+            </div>
+
+
+
+      <div class="text-center">
+          <button class="btn btn-success pull-center text-uppercase" ng-click="editTrip(editedTrip)" data-dismiss="modal" ng-disabled="editTripForm.$invalid">Save</button>
+      </div>
+    </form>
+  
+
+</script>
+
+<script type="text/ng-template" id ="/editEventForm.html">
+  <form class="form-signin" name="editEventForm" id="editEventForm">
+    
+      <div class="form-label-group" ng-class="{'has-error': editEventForm.title.$invalid && editEventForm.title.$touched}">
+          <input type="text" name="title" ng-model="editedEvent.title" id="inputTitle1" class="form-control" placeholder="Title" required>
+          <label for="inputTitle1">Title</label>
+          <small class="help-block" ng-show="editEventForm.title.$invalid && editEventForm.title.$touched">Please enter a Trip Title</small>
+        </div>
+  
+        <div class="form-label-group" ng-class="{'has-error': editEventForm.location.$invalid && editEventForm.location.$touched}">
+            <input type="text" name="location" placeholder="Enter your address" id="inputLocation11" required ng-places-autocomplete ng-model="editedEvent.location" class="form-control" options="vm.options" details="vm.details" initial-address="vm.initialAddress" required/>
+            <label for="inputLocation11">Location</label>
+            <small class="help-block" ng-show="editEventForm.location.$invalid && editEventForm.location.$touched">Please enter a Location</small>
+  
+          </div>
+
+            
+          <div class="form-label-group" ng-class="{'has-error': editEventForm.airline.$invalid && editEventForm.airline.$touched}">
+              <input type="text" name="airline" ng-model="editedEvent.airline" id="airline1" class="form-control" placeholder="Flight Number">
+              <label for="airline1">Airline</label>
+            </div>
+
+  
+        <div class="form-label-group">
+            <input type="text" name="description" ng-model="editedEvent.flightDetail" id="inputDescription1" class="form-control" placeholder="Flight Detail">
+            <label for="inputDescription1">Flight Detail</label>
+          </div>
+  
+            <div class="form-label-group" ng-class="{'has-error': editEventForm.hotel.$invalid && editEventForm.hotel.$touched}">
+                <input type="text" name="hotel" placeholder="Enter your hotel address" id="inputHotel1" ng-places-autocomplete ng-model="editedEvent.hotel" class="form-control" options="vm.options" details="vm.details" initial-address="vm.initialAddress"/>
+                <label for="inputHotel">Hotel</label>
+                <small class="help-block" ng-show="editEventForm.hotel.$invalid && editEventForm.hotel.$touched && !editEventForm.hotel.valid">Please enter a Location for Hotel</small>
+      
+              </div>
+
+        
+        <div class="form-label-group" ng-class="{'has-error': newEventForm.user.$invalid && newEventForm.user.$touched && !isSelectedValid}">
+
+          <div class="botton-group-add-back">
+              <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+              <select ng-model="selectedUser" class="form-control" ng-options="x.fullName for x in users">
+              </select>
+              <button class="btn btn-primary btn-circle" ng-click="selectedList(selectedUser)"><i  class="glyphicon glyphicon-plus"></i></button>
+          </div>
+
+        <div class="form-label-group" ng-class="{'has-error': newTripForm.user.$invalid && newTripForm.user.$touched && !isSelectedValid}">
+            <p class="inputUser" style="color: #495057;font-weight: 700;" for="inputUser">User: </p> 
+            <div ng-repeat="user in selectedUserList track by $index" style="padding-left:10px;padding-right:10px;">
+                <div class="botton-group-add-back">
+                  <button class="accordion-user">{{user.fullName}}</button>
+                  <button class="btn-remove" ng-click="removeUserFromSelectList(user)"><i class="glyphicon glyphicon-remove text-center"></i></button>
+                </div>
+              </div>
+
+          <div class="botton-group-add-back">
+              
+              <select ng-model="selectedUser" id="UserInput" class="form-control" ng-options="x.fullName for x in users">
+              </select>
+              <button type="button" class="btn btn-primary" ng-click="selectedList(selectedUser)"> + </button>
+          </div>
+
+          
+          <small class="help-block" ng-show="!isSelectedValid">User Existed or Invalid</small>
+        </div>
+
+  
+        <div class="form-label-group" ng-class="{'has-error': editEventForm.startsAt.$invalid && editEventForm.budget.$touched}">
+            <input type="datetime-local" name="startsAt" ng-model="editedEvent.startsAt" id="inputStartsAt1" class="form-control" placeholder="Start At" required>
+            <label for="inputStartsAt1">Start At</label>
+            <small class="help-block" ng-show="editEventForm.startsAt.$invalid && editEventForm.startsAt.$touched">Please enter a valid Date</small>
+          </div>
+  
+          <div class="form-label-group" ng-class="{'has-error': editEventForm.endsAt.$invalid && editEventForm.budget.$touched}">
+            <input type="datetime-local" name="endsAt" ng-model="editedEvent.endsAt" id="inputEndsAt1" class="form-control" placeholder="End At" required>
+            <label for="inputEndsAt1">End At</label>
+            <small class="help-block" ng-show="editEventForm.endsAt.$invalid && editEventForm.endsAt.$touched">Please enter a valid Date</small>
+          </div>
+
+    <div class="text-center">
+        <button type ="button" class="btn btn-success pull-center text-uppercase" ng-click="editEvent(editedEvent)" data-dismiss="modal" ng-disabled="editEventForm.$invalid">Save</button>
+    </div>
+  </form>
+</script>
+
+

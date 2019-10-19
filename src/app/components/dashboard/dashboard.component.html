@@ -1,0 +1,86 @@
+<!-- Top navigation -->
+<nav class="navbar navbar-dark navbar-expand fixed-top bg-dark shadow p0 m0">
+        <a class="navbar-brand" routerLink="/dashboard">
+          <img class="brand-logo logo" src="assets/logo.png" alt="SmartCalendar logo">
+          <span class="dasboard-text dasboard-text-active">Dashboard</span>
+        </a>
+      <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/time-table">Time Table</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/manage">Manage</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/report">Report</a>
+          </li>
+        </ul>
+        <span class="nav-item my-2 my-lg-0"> 
+          <a class="nav-link" routerLink="/profile">
+            <button type="button" class="btn btn-circle btn-sm text-center"><i class="fas fa-user user-icon"></i></button>
+         </a>
+        </span>
+  </nav>
+
+
+<!-- Sidebar navigation -->
+<div class="container-fluid">
+   <ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-scale-multiple"
+>
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+  <div class="row">
+    <!-- Main content -->
+    <main role="main" class="col-md-9 ml-sm-auto mr-sm-auto col-lg-10 px-4">
+      <div class="inner-adjust">
+        <div class="row pt-3 pb-2 mb-3 border-bottom">
+          <div class="col-md-4 col-sm-12">
+              <h1 class="h2">Intinerary</h1>
+          </div>
+          <div class="col-md-8 col-sm-12 d-flex flex-row align-items-center">
+              
+              <!-- <select name="fieldName"  [(ngModel)]="selectedValue" ngDefaultControl>
+                  <option *ngFor="let option of availableOptions"  ngDefaultControl [ngValue]="option">{{option}}</option>
+                </select> -->
+                <mat-form-field>
+                    <mat-label>Group By</mat-label>
+                    <mat-select [(ngModel)]="selectedValue" (ngModelChange)="setDateFilter($event)">
+                        <mat-option value="None">None</mat-option>
+                        <mat-option value="Staff">Staff</mat-option>
+                        <mat-option value="Month">Month</mat-option>
+                      </mat-select>
+                  </mat-form-field>
+                
+
+                <div class="btn-group ml-auto p-2">
+                    <label class="btn btn-primary" [(ngModel)]="filterDateMode" uib-btn-radio="'upcoming'" >Up Next</label>
+                    <label class="btn btn-primary" [(ngModel)]="filterDateMode" uib-btn-radio="'past'">Past</label>
+                  </div> 
+          </div>
+          
+        </div>
+        <!-- Show user data when logged in -->
+        <div class="row max-width">
+            
+            <div class="list-group max-width min-height" >
+              
+                <a href="#" *ngFor="let itinerary of (travelItineraries | async)" [class.done]="itinerary.done" class="list-group-item list-group-item-action flex-column align-items-start mb-2">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{itinerary.title? itinerary.title: 'Unknown Title'}}</h5>
+                    <small>in 3 days ago</small>
+                  </div>
+                  <p class="mb-1">{{itinerary.startsAt | date}} - {{itinerary.endsAt | date}}</p>
+                  <small>Donec id elit non mi porta.</small>
+                </a>
+              </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
