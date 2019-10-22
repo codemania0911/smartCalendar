@@ -10,7 +10,6 @@ angular.module('myApp.view_dash_board', ['ngRoute','mwl.calendar', 'ngPlacesAuto
   };
 })
 
-
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view_dash_board', {
     templateUrl: 'view_dash_board/view_dash_board.html',
