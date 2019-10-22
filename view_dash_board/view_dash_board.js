@@ -183,8 +183,6 @@ vm.init = function () {
 
 };
 
-
-
 vm.init();
 
 
