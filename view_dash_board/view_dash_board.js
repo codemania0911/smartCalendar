@@ -185,7 +185,6 @@ vm.init = function () {
 vm.init();
 
 
-
 vm.collapseOpen = function(event) {
   if(event.expand){
     event.expand = false
