@@ -180,7 +180,6 @@ vm.init = function () {
   vm.selectedType ='TravelItinerary'
   setTimeout(function(){window.addeventatc.refresh();},200)
   
-
 };
 
 vm.init();
