@@ -29,7 +29,6 @@ var actions = [
   
 //retrieve events from firebasearray
 
-
 var calendarEvents ;
 
 var vm= $scope;
